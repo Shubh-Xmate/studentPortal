@@ -1,5 +1,5 @@
 require('dotenv').config()
-const redisService = require("../services/redisService");
+const redisService = require("../services/redisService")
 const dbQueries = require("../services/dbQueries")
 const inputValidate = require("../middleware/validate")
 const {sendResponse} = require("../Utils/sendData")
@@ -91,10 +91,11 @@ const getDataByPatientId = async(req, res)=>
             returningData.mainTitle = "Give id find detail"
             returningData.data = null
             returningData.mainContent = validationValue
+            resStatus = 400 // bad request
             setValidate(returningData, req)
             resRenderedPage = 'findByUserId'
             
-            sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+            sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
         }
         
     }
@@ -182,10 +183,11 @@ const insertData = async (req, res)=>
             returningData.mainTitle = "Insertion form"
             returningData.data = null
             returningData.mainContent = validationValue
+            resStatus = 400
             setValidate(returningData, req)
             resRenderedPage = 'insertionForm'
             
-            sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+            sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
         }
     } 
     catch(error)

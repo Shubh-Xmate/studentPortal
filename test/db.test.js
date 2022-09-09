@@ -1,30 +1,22 @@
 
 const request = require('supertest');
 const { app } = require('../loader');
-const patientsModel = require('../models/patientsModel');
+const {getAllPatients, getDataById, updateDataById, insertData} = require('../services/dbQueries')
 jest.useFakeTimers();
-jest.setTimeout(() => {
-    
-}, timeout);
 
 // test patient
 const testPatient = 
 {
-    name : 'test Patient',
-    age : 23,
-    gender : 'Male',
-    walletAmount : 5666
+    name : 'test Patient2',
+    age : 25,
+    gender : 'Female',
+    walletAmount : 5663
 }
 
-const expectNoError = (response) =>
+const expectNoErrorWithSuccessResponse = (response) =>
 {
     expect(response.status).toBe(200);
     expect(response.body.error).toBe(null);
-}
-
-const expect500Status = (response) =>
-{
-    expect(response.status).toBe(500);
 }
 
 const expectMainTitle = (response, expectedTitle) =>
@@ -32,19 +24,13 @@ const expectMainTitle = (response, expectedTitle) =>
     expect(response.body.mainTitle).toBe(expectedTitle);
 }
 
-// calling to some other port
-
-// calling to some undefined route
-
-// calling to the defined route
-
 // home route
 describe('Check get home route', () =>
 {
-    test('Get the home route object without any error', async () =>
+    test('No err and main title of the page', async () =>
     {
         const response = await request(app).get('/');
-        expectNoError(response);
+        expectNoErrorWithSuccessResponse(response);
         expectMainTitle(response, "Home");
     })
 })
@@ -52,51 +38,118 @@ describe('Check get home route', () =>
 // get all patients details
 describe('Check get all patients route', () =>
 {
-    test('Get all patient details without any error', async () =>
+    test('No err and main title of the page', async () =>
     {
-        const response = await request(app).get('/allPatients');
-        console.log(response.body)
-        expectNoError(response);
+        let response = await request(app).get('/allPatients');
+        expectNoErrorWithSuccessResponse(response);
         expectMainTitle(response, "All Patients");
+    })
+    test('Gets called with the right thing', async () =>
+    {
+        let response = await request(app).get('/allPatients');
+        const currData = response.body.data[0];
+        const keys = ['patient_id', 'name', 'age', 'gender', 'walletAmount']
+        keys.forEach((fieldValue)=>
+        {
+            expect(currData).toHaveProperty(fieldValue);
+        })
+        
     })
 })
 
-// describe('Checking Patient Routes', () => 
-// {
-//     test('Given all the input fields are valid, it should create a new patient', async () => 
-//     {
-//         const res = await request(app).post('/patient/create').send(patient);
-//         // checking status
-//         expect(res.status).toBe(200);
-//         // checking if patient was created correctly
-//         expect(res.body).toMatchObject(patient);
-//     });
+// all post situations here 
 
-//   test('Given invalid input, this test should fail', async () => {
-//     const patient = {
-//       name : 'Name 2',
-//       age : 23,
-//       gender : 'Female',
-//       // walletAmount : 900,
-//     }
-//     const res = await request(app).post('/patient/create').send(patient);
-//     // checking status
-//     expect(res.status).not.toBe(200);
-//   });
+// get details by the patient id
+describe('Check get data by patients id', () =>
+{
+    let patientId = 1;
+    let patientData = "patientId=" + String(patientId);
+    test('Given valid i/p : No err and main title of the response page', async () =>
+    {
+        let response = await request(app)
+                        .post('/getDetails')
+                        .send(patientData)
 
-//   test('Given valid Patient ID and Wallet Amount, it should pass', async () => {
-//     const ress = await patientsModel.create(testPatient);
-//     const res = await request(app).post('/patient/update').send({
-//       id : ress.dataValues.id,
-//       walletAmount : 333,
-//     });
-//     expect(res.statusCode).toBe(200);
-//   });
+        expectNoErrorWithSuccessResponse(response);
+        expectMainTitle(response, "fetched successfully")
+    })
 
-//   test('Given valid patient ID, it should give correct patient details', async () => {
-//     const ress = await patientsModel.create(testPatient);
-//     const res = await request(app).get(`/patient/${ress.dataValues.id}/details`);
-//     expect(res.status).toBe(200);
-//     expect(res.body).toMatchObject(testPatient);
-//   });
-// })
+    test('Given invalid i/p : error message should be sent', async () =>
+    {
+        let response = await request(app)
+                        .post('/getDetails')
+                        .send({})
+
+        expect(response.status).not.toBe(200)
+        expectMainTitle(response, "Give id find detail")
+        expect(response.body.mainContent).toBe("Entered null values")
+    })
+
+    test('If result returned : then should be with right fields', async () =>
+    {
+        
+        let response = await request(app).post('/getDetails').send(patientData)
+        let currData = response.body.data;
+        
+        if(currData)
+        {
+            currData = currData[0];
+            const keys = ['patient_id', 'name', 'age', 'gender', 'walletAmount']
+            keys.forEach((fieldValue)=>
+            {
+                expect(currData).toHaveProperty(fieldValue);
+            })
+        }
+    })
+
+    test('db and api retuned object should be same', async() => 
+    {
+        let response = await request(app).post('/getDetails').send(patientData)
+
+        const currData = response.body.data;
+        let dbData = await getDataById(patientId);
+        if(dbData.length == 0)dbData = null;
+
+        if(!currData && !dbData)
+        {
+            console.log("Both are returning null values");
+            expect(1).toBe(1);
+        }
+        else expect(currData).toMatchObject(dbData);
+    })
+})
+
+// creating new patient route tests
+describe('Check create new patient route', () =>
+{
+    let patientDetails = "name=" + testPatient.name + "&" + "age=" + testPatient.age + "&" + "gender=" + testPatient.gender + "&" + "walletAmount=" + testPatient.walletAmount;
+
+    test('Given all valid inputs, should insert the data', async () =>
+    {
+        const response = await request(app).post("/insert")
+                                           .send(patientDetails);
+        
+        const resData = response.body.data; 
+        delete resData[0].updatedAt; delete resData[0].createdAt;
+        const dbData = await getDataById(resData[0].patient_id);
+        dbData[0].walletAmount = String(dbData[0].walletAmount);
+        
+        expect(resData).toMatchObject(dbData);
+    }) 
+
+    // no wallet amount is passed
+    let patientDetails2 = "name=" + testPatient.name + "&" + "age=" + testPatient.age + "&" + "gender=" + testPatient.gender; 
+    
+    test('Given invalid input, error should be returned', async () => 
+    {
+        const response = await request(app).post("/insert")
+                                           .send(patientDetails2);
+        
+        expect(response.status).not.toBe(200);
+        expect(response.body.data).toBe(null);
+        expect(response.body.mainTitle).toBe("Insertion form")
+        expect(response.body.mainContent).toBe("Entered null values")
+    });
+})
+
+// update new patient routes

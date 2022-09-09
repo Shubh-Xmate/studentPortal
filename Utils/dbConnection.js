@@ -6,6 +6,15 @@ const sequelize = new Sequelize(
     dbConfig.USER,
     dbConfig.PASSWORD,
     {
+      query : {raw : true},
+      define: 
+      {
+        defaultScope: 
+        {
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        }
+      },
+      
       host: dbConfig.HOST,
       dialect: dbConfig.dialect
     }

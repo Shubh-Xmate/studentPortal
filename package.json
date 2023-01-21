@@ -1,0 +1,19 @@
+{
+  "name": "patientsapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shubh-Xmate/patientsApp.git"
+  },
+  "author": "Shubham Shukla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shubh-Xmate/patientsApp/issues"
+  },
+  "homepage": "https://github.com/Shubh-Xmate/patientsApp#readme"
+}

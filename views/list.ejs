@@ -1,0 +1,42 @@
+<%- include("./partials/header.ejs") %>
+
+<body>
+  <%- include("./partials/linkNav.ejs") %>
+
+  <div class="blogs content">
+    
+    <% if (data.length > 0) { %>
+    <h2 style="text-align: center;"> <%= mainContent %> </h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Name</th>
+              <th scope="col">Age</th>
+              <th scope="col">Gender</th>
+              <th scope="col">Wallet Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% data.forEach(data => { %>
+              <tr>
+                <td><%= data.patient_id %></td>
+                <td><%= data.name %></td>
+                <td><%= data.age %></td>
+                <td><%= data.gender %></td>
+                <td><%= data.walletAmount %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      
+    <% } else { %>
+
+    <h2 style="text-align: center;"> There is no data to display... </h2>
+    <% } %>
+    
+  </div>
+
+  <%- include("./partials/footer.ejs") %>
+</body>
+</html>

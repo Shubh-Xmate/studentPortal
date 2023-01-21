@@ -1,0 +1,26 @@
+<%- include("./partials/header.ejs") %>
+
+<body>
+  <%- include("./partials/linkNav.ejs") %>
+
+  <h2 style="text-align: center;"> <%= mainContent %> </h2>
+  
+  <div class="create-blog content">
+    <form action="/update" method="POST">
+        <input type="text" id="title" name="patientID" placeholder="ID of the patient" required>
+        
+        <br>
+        <label>PLEASE FILL NEW USER DETAILS</label>
+        <br>
+        
+        <input type="text" id="title" name="newName" placeholder="New name" required>
+        <input type="number" id="snippet" name="age" placeholder="Age" required>
+        <input type="text" id="title" name="gender" placeholder="Gender" required>
+        <input type="number" id="snippet" name="walletAmount" placeholder="Wallet Amount" required>
+        <button>Submit</button>
+    </form>
+  </div>
+
+  <%- include("./partials/footer.ejs") %>
+</body>
+</html>

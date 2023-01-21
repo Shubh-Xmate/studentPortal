@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap');
+    body{
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+      font-family: monospace;
+      max-width: 1200px;
+      border: 2px dashed lightslategray;
+      background-color: antiquewhite;
+    }
+    h1
+    {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        color: #222;
+    }
+    p, h2, h3, a, ul{
+      margin: 0;
+      padding: 0;
+      text-decoration: none;
+      color: #222;
+    }
+    li
+    {
+      margin: 10px;
+    }
+
+    /* nav & footer styles */
+    nav{
+      /* display: flex; */
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-top: 1px solid #ddd;
+      text-transform: uppercase;
+    }
+    nav ul{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    nav li{
+      list-style-type: none;
+      margin-left: 20px;
+    }
+    nav h1{
+      font-size: 3em;
+    }
+    nav p, nav a{
+      color: #777;
+      font-weight: 300;
+    }
+    footer{
+      color: #777;
+      text-align: center;
+      margin: 80px auto 20px;
+    }
+    h3{
+      text-transform: capitalize;
+      margin-bottom: 8px;
+    }
+    .content{
+      margin-left: 20px;
+    }
+
+    /* index styles */
+    li
+    {
+      text-decoration: underline;
+      
+    }
+    a:hover, .mainLink:hover
+    {
+      color: rebeccapurple;
+    }
+
+    .blogs a{
+      display: block;
+      padding-left: 30px;
+    }
+    .blogs a:hover h3{
+      color: crimson;
+    }
+
+    /* details styles */
+    .details{
+      position: relative;
+    }
+    .delete{
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-radius: 50%;
+      padding: 8px;
+    }
+    .delete:hover{
+      cursor: pointer;
+      box-shadow: 1px 2px 3px rgba(0,0,0,0.2);
+    }
+
+    /* create styles */
+    .create-blog form{
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .create-blog input,
+    .create-blog textarea{
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 8px;
+    }
+    .create-blog label{
+      display: block;
+      margin-top: 24px;
+    }
+    textarea{
+      height: 120px;
+    }
+    button
+    {
+      width: 100px;
+      height: 30px;
+      padding: 5px;
+    }
+
+table {
+    margin-top: 10px;
+    text-align: center;
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    }
+    
+    td, th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+    background-color: #dddddd;
+    }

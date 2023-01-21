@@ -1,0 +1,17 @@
+<%- include("./partials/header.ejs") %>
+
+<body>
+  <%- include("./partials/linkNav.ejs") %>
+
+  <h2 style="text-align: center;"> <%= mainContent %> </h2>
+
+  <div class="create-blog content">
+    <form action="/getDetails" method="POST">
+      <input type="text" id="title" name="patientsId" placeholder="Name" required>
+      <button>Submit</button>
+    </form>
+  </div>
+
+  <%- include("./partials/footer.ejs") %>
+</body>
+</html>

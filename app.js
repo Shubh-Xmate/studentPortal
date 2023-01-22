@@ -1,8 +1,8 @@
 require('dotenv').config();
 const exp = require("express");
 const bodyParser= require("body-parser");
-const patientsRoutes = require(__dirname + "/routes/routeinfo.js");
-const loader = require(__dirname + "/controllers/loader.js");
+const patientsRoutes = require("./routes/routeInfo")
+const loader = require("./controllers/loader");
 
 // creating the app
 const app = exp();

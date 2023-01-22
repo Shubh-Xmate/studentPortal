@@ -42,7 +42,7 @@ exports.getDataByPatientId = async(req, res, next)=>
         console.log("databaseControllers -> getDataByPatientId, err : " ,err);
         res.send("fetchingPatients : internal error");
     }
-};
+    };
 
 exports.updateDataByPatientID = async (req, res, next)=>
 {

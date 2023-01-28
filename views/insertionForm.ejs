@@ -6,15 +6,112 @@
   <h2 style="text-align: center;"> <%= mainContent %> </h2>
   
   <div class="create-blog content">
-    <form action="/insert" method="POST">
-      <input type="text" id="title" name="name" placeholder="Name" required>
-      <input type="number" id="snippet" name="age" placeholder="Age" required>
-      <input type="text" id="title" name="gender" placeholder="Gender" required>
-      <input type="number" id="snippet" name="walletAmount" placeholder="Wallet Amount" required>
+    <form action="/insert" onsubmit="return validate()" method="POST">
+      <input type="text" minlength="1" maxlength="30"  id="nameInput"  name="name" placeholder="Name" required>
+      <div class="formErr" id="nameMess"></div>
+      <input type="number" min="1" max="500"  id="ageInput" name="age" placeholder="Age" required>
+      <div class="formErr" id="ageMess"></div>
+      <label for="gender">Choose gender : </label>
+      <select id="genderInput" name="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Prefer not to say">Prefer not to say</option>
+      </select>
+      <div class="formErr" id="genderMess"></div>
+      <input type="number" min="0" max="1000000000000000"  id="walletAmountInput" name="walletAmount" placeholder="Wallet Amount" required>
+      <div class="formErr" id="walletAmountMess"></div>
       <button>Submit</button>
     </form>
   </div>
 
   <%- include("./partials/footer.ejs") %>
+
+  <script>
+    function validate()
+    {
+      let nameInput = document.getElementById("nameInput").value;
+      let ageInput = document.getElementById("ageInput").value;
+      let genderInput = document.getElementById("genderInput").value;
+      let walletAmountInput = document.getElementById("walletAmountInput").value;
+
+      let isValid = true;
+      
+      if(!nameInput)
+      {
+        document.getElementById("nameMess").innerHTML = "Name must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(String(nameInput).length > 30)
+        {
+          document.getElementById("nameMess").innerHTML = "Name should be 30 characters at most";
+          isValid = false;
+        }
+      }
+
+      if(!genderInput)
+      {
+        document.getElementById("genderMess").innerHTML = "Gender must be given";
+        isValid = false;
+      }
+      else
+      {
+        const validGender = ['Male', 'Female', 'Prefer not to say'];
+        if(!validGender.includes(genderInput))
+        {
+          document.getElementById("genderMess").innerHTML = "Invalid gender input";
+          isValid = false;
+        }
+      }
+
+      if(!ageInput)
+      {
+        document.getElementById("ageMess").innerHTML = "Age must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(isNaN(Number(ageInput)))
+        {
+          document.getElementById("ageMess").innerHTML = "Age should be given a number";
+          isValid = false;
+        }
+        else
+        {
+          if(Number(ageInput) < 1 || Number(ageInput) > 500)
+          {
+            document.getElementById("ageMess").innerHTML = "age must be a number between 1 to 500";
+            isValid = false;
+          }
+        }
+      }
+
+      if(!walletAmountInput)
+      {
+        document.getElementById("walletAmountMess").innerHTML = "Wallet amount must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(isNaN(Number(walletAmountInput)))
+        {
+          document.getElementById("walletAmountMess").innerHTML = "Wallet amount should be given a number";
+          isValid = false;
+        }
+        else
+        {
+          if(Number(walletAmountInput) < 0 || Number(walletAmountInput) > 1000000000000000) 
+          {
+            document.getElementById("walletAmountMess").innerHTML = "Wallet Amount must be a number between 0 to 1000000000000000";
+            isValid = false;
+          }
+        }
+      }
+  
+      if(isValid)return true;
+      else return false;
+    }
+  </script>
 </body>
 </html>

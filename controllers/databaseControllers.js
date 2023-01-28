@@ -1,82 +1,216 @@
+require('dotenv').config()
 const redisService = require("../services/redisService");
 const dbQueries = require("../services/dbQueries")
+const inputValidate = require("../middleware/validate")
+const {sendResponse} = require("../Utils/sendData")
+const {loginSession, logoutSession, setValidate} = require("../Utils/sessionHandler")
 
-exports.allPatients = async(req, res, next)=>
+let resStatus = 200;
+let resRenderedPage = 'home';
+let returningData = {mainContent : "", mainTitle : "", isValidUser : true, data : null, error : null};
+
+function updateReturningData(req, err = null, currStatus = 200)
+{
+    returningData.mainContent = ""; 
+    returningData.mainTitle = "Home"; 
+    returningData.error = err;
+    setValidate(returningData, req);
+    resRenderedPage = 'home';
+    resStatus = currStatus;
+}
+
+const authenticate = async(req, res) =>
 {
     try
     {
-        const data = await dbQueries.getAllPatients();
-
-        const returningData = {data : data, mainContent : "Here is the patients details", mainTitle : "All Patients"};
-        res.render('list', returningData);
+        loginSession(req);
+        updateReturningData(req)
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage);
     }
-    catch(err)
+    catch(error)
     {
-        console.log("databaseControllers -> allPatients, err : " ,err);
-        res.send("allPatients : internal error");
+        updateReturningData(req, err = error, currStatus = 500);
+        returningData.mainContent = "problem during authenticated";
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
 }
 
-exports.getDataByPatientId = async(req, res, next)=>
+const allPatients = async(req, res) =>
 {
     try
     {
-        const patientID = req.body.patientsId;
-        const getKeyResponse = await redisService.getKey(patientID);
+        const dbData = await dbQueries.getAllPatients();
+        
+        returningData.data = dbData; 
+        returningData.mainContent = "Here is the patients details"; 
+        returningData.mainTitle = "All Patients"; 
+        setValidate(returningData, req);
+        resRenderedPage = 'list';
 
-        if(getKeyResponse == null || getKeyResponse == undefined)
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+    }
+    catch(error)
+    {
+        updateReturningData(req, err = error, currStatus = 500);
+        returningData.mainContent = "problem in fetching details";
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
+    }
+}
+
+const getDataByPatientId = async(req, res)=>
+{
+    try
+    {
+        const validationValue = inputValidate.validateGetDataByIdInputData(req);
+        
+        if(validationValue == true)
         {
-            const data = await dbQueries.getDataById(patientID);
-            await redisService.setKey(patientID, data[0]);
+            const patientID = req.body.patientId;
+            const getKeyResponse = await redisService.getKey(patientID);
 
-            const returningData = {data : data, mainContent : "Here is the detail of the given name patients", mainTitle : "fetched successfully"};
-            res.render('list', returningData);    
+            returningData.mainContent = "Here is the detail of the given patient's ID"; 
+            returningData.mainTitle = "fetched successfully";  
+            setValidate(returningData, req);
+            resRenderedPage = 'list';
+
+            if(!getKeyResponse)
+            {
+                const dbData = await dbQueries.getDataById(patientID);
+                if(dbData.length > 0)await redisService.setKey(patientID, dbData[0]);
+                returningData.data = dbData; 
+                sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+            }
+            else
+            {
+                returningData.data = [getKeyResponse]; 
+                sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+            }
         }
         else
         {
-            res.render('list', {data : [getKeyResponse], mainContent : "Here is the detail of the given name patients", mainTitle : "fetched successfully"});   
+            returningData.mainTitle = "Give id find detail"
+            returningData.data = null
+            returningData.mainContent = validationValue
+            setValidate(returningData, req)
+            resRenderedPage = 'findByUserId'
+            
+            sendResponse(res, data = returningData, rendered_page = resRenderedPage);
         }
+        
     }
     catch(err)
     {
-        console.log("databaseControllers -> getDataByPatientId, err : " ,err);
-        res.send("fetchingPatients : internal error");
+        updateReturningData(req, err = error, currStatus = 500);
+        returningData.mainContent = "fetchingPatients : internal error";
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
-    };
+};
 
-exports.updateDataByPatientID = async (req, res, next)=>
+const updateDataByPatientID = async (req, res)=>
 {
     try
     {
-        const userId = req.body.patientID;
-        const data = {name : req.body.newName, age : req.body.age, gender : req.body.gender, walletAmount : req.body.walletAmount};
+        const validationValue = inputValidate.validateUpdationInput(req);
 
-        const result = dbQueries.updateDataById(userId, data);
-        const returningData = {mainContent : "You can find your updated details in the GET ALL PATIENTS DETAILS section", mainTitle : "updated successfully"};
+        if(validationValue == true)
+        {
+            const userId = req.body.patientId;
+            const queryData = {name : req.body.newName, age : req.body.age, gender : req.body.gender, walletAmount : req.body.walletAmount};
+            await dbQueries.updateDataById(userId, queryData);
 
-        res.render('home', returningData);
+            const dbData = await dbQueries.getDataById(userId);
+            if(dbData.length > 0)
+            {
+                await redisService.setKey(userId, dbData[0]);
+                returningData.data = dbData; 
+                returningData.mainContent = "This is the updated details"
+                returningData.mainTitle = "updated successfully"
+                resRenderedPage = "list"
+
+                sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+            }
+            else
+            {
+                updateReturningData(req);
+                returningData.mainContent = "No patient with the given ID"; 
+                returningData.mainTitle = "";
+    
+                sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+            }
+            
+        }
+        else
+        {
+            returningData.mainTitle = "Updation form"
+            returningData.data = null
+            returningData.mainContent = validationValue
+            setValidate(returningData, req)
+            resRenderedPage = 'updationForm'
+
+            sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+        }
     }
-    catch(err)
+    catch(error)
     {
-        console.log("databaseControllers -> updateDataByPatientID, err : " ,err);
-        res.send("updation failed");
+        updateReturningData(req, err = error, currStatus = 500);
+        returningData.mainContent = "updation failed";
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
 }
 
 
-exports.insertData = async (req, res, next)=>
+const insertData = async (req, res)=>
 {
     try 
     {
-        const data = {name : req.body.name, age : req.body.age, gender : req.body.gender, walletAmount : req.body.walletAmount};
-        const result = await dbQueries.insertData(data);
-        
-        const returningData = {data : result, mainContent : "Here you can see your patients filled details", mainTitle : "Inserted Successfully"};
-        res.render('list', returningData);
+        const validationValue = inputValidate.validateInsertionInput(req);
+        if(validationValue == true)
+        {
+            const queryData = {name : req.body.name, age : req.body.age, gender : req.body.gender, walletAmount : req.body.walletAmount};
+            const result = await dbQueries.insertData(queryData);
+            
+            returningData.data = result;
+            returningData.mainContent = "Here you can see your patients filled details";
+            returningData.mainTitle = "Inserted Successfully";
+            setValidate(returningData, req);
+            resRenderedPage = 'list';
+
+            sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+        }
+        else
+        {
+            returningData.mainTitle = "Insertion form"
+            returningData.data = null
+            returningData.mainContent = validationValue
+            setValidate(returningData, req)
+            resRenderedPage = 'insertionForm'
+            
+            sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+        }
     } 
-    catch(err)
+    catch(error)
     {
-        console.log("databaseControllers -> insertData, err : " ,err);
-        res.send("insertion failed");
+        updateReturningData(req, err = error, currStatus = 500);
+        returningData.mainContent = "insertion failed";
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
 };
+
+const logout = (req, res) => 
+{
+    try
+    {
+        logoutSession(req)
+        updateReturningData(req)
+        returningData.mainContent = "successfully logged out"
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+    }
+    catch(error)
+    {
+        updateReturningData(req, err = error, currStatus = 500)
+        returningData.mainContent = "problem during logging out"
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
+    }
+};
+
+module.exports = {authenticate, allPatients, getDataByPatientId, insertData, updateDataByPatientID, logout}

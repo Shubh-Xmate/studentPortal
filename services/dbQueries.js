@@ -1,10 +1,5 @@
-const Patient = require("../models/patientsModel");
-
-// function implemented here :
-// getAllPatients : will return all patient data
-// getDataById : will return patient's data of given ID
-// updateDataById : update data of the patient whose ID is given
-// insertData : new insertion
+const patientsModel = require("../models/patientsModel");
+const Patient = patientsModel.Patient;
 
 const getAllPatients = async() => 
 {
@@ -19,7 +14,6 @@ const getAllPatients = async() =>
         return null;
     }
 }
-
 const getDataById = async (patientID) =>
 {
     try

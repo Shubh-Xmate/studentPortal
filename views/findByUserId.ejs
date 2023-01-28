@@ -6,12 +6,46 @@
   <h2 style="text-align: center;"> <%= mainContent %> </h2>
 
   <div class="create-blog content">
-    <form action="/getDetails" method="POST">
-      <input type="text" id="title" name="patientsId" placeholder="Name" required>
+    <form action="/getDetails" onsubmit="return validate()"  method="POST">
+      <input type="number" min="1" max="1000000000000" id="patientId" name="patientId" placeholder="ID of the patient" required>
+      <div class="formErr" id="patientIdMess"></div>
       <button>Submit</button>
     </form>
   </div>
 
   <%- include("./partials/footer.ejs") %>
+
+  <script>
+    function validate()
+    {
+      let patientNum = document.getElementById("patientId").value;
+      let isValid = true;
+
+      if(!patientNum)
+      {
+        document.getElementById("patientIdMess").innerHTML = "Patient ID must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(isNaN(Number(patientNum)))
+        {
+          document.getElementById("patientIdMess").innerHTML = "Enter numeric value only";
+          isValid = false;
+        }
+        else
+        {
+          if(Number(patientNum) < 1 || Number(patientNum) > 1000000000000)
+          {
+            document.getElementById("patientIdMess").innerHTML = "ID should be a number between 1 and 1000000000000";
+            isValid = false;
+          }
+        }
+      }
+
+      if(isValid)return true;
+      else return false;
+    }
+  </script>
 </body>
 </html>

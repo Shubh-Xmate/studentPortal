@@ -1,15 +1,5 @@
-require('dotenv').config();
-const exp = require("express");
-const bodyParser= require("body-parser");
-const patientsRoutes = require("./routes/routeInfo")
-const loader = require("./controllers/loader");
-
-// creating the app
-const app = exp();
-app.use(bodyParser.urlencoded({extended : true}));
-app.use(exp.static('public'));
-app.set('view engine', 'ejs');
-app.use(patientsRoutes);
+const loader = require("./loader");
+const app = loader.app;
 
 app.listen(process.env.PORT, (err) =>
 {

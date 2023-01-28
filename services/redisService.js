@@ -9,11 +9,12 @@ client.connect().then(()=>{
   console.log("connection issue in redis : ", err);
 });
 
-exports.setKey =  async (key, data)=>
+const setKey =  async (key, data)=>
 {
   try
   {
-    await client.set(key, JSON.stringify(data));
+    const timeToLive = 3*24*60*60; // 3 days
+    await client.setEx(key, timeToLive, JSON.stringify(data));
   }
   catch(err)
   {
@@ -22,7 +23,7 @@ exports.setKey =  async (key, data)=>
   }
 }
 
-exports.getKey = async(key)=>
+const getKey = async(key)=>
 {
   try
   {
@@ -38,17 +39,4 @@ exports.getKey = async(key)=>
   }
 }
 
-exports.delKey = async(key)=>
-{
-  try
-  {
-    await client.del(key);
-    return true;
-  }
-  catch(err)
-  {
-    let errMessage = "Error while deleting key in redis";
-    console.log(errMessage, err);
-    return false;
-  }
-}
+module.exports = {client, setKey, getKey}

@@ -6,21 +6,143 @@
   <h2 style="text-align: center;"> <%= mainContent %> </h2>
   
   <div class="create-blog content">
-    <form action="/update" method="POST">
-        <input type="text" id="title" name="patientID" placeholder="ID of the patient" required>
+    <form action="/update" method="POST" onsubmit="return validate()">
+        <input type="text" id="patientIdInput" min="1" max="1000000000000" name="patientId" placeholder="ID of the patient" required>
+        <div class="formErr" id="patientIdMess"></div>
         
         <br>
-        <label>PLEASE FILL NEW USER DETAILS</label>
+        <div>PLEASE FILL NEW USER DETAILS</div>
         <br>
-        
-        <input type="text" id="title" name="newName" placeholder="New name" required>
-        <input type="number" id="snippet" name="age" placeholder="Age" required>
-        <input type="text" id="title" name="gender" placeholder="Gender" required>
-        <input type="number" id="snippet" name="walletAmount" placeholder="Wallet Amount" required>
+
+        <input type="text" minlength="1" maxlength="30"  id="nameInput"  name="newName" placeholder="New name" required>
+        <div class="formErr" id="nameMess"></div>
+        <input type="number" min="1" max="500"  id="ageInput" name="age" placeholder="Age" required>
+        <div class="formErr" id="ageMess"></div>
+        <label for="gender">Choose gender : </label>
+        <select id="genderInput" name="gender">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Prefer not to say">Prefer not to say</option>
+        </select>
+        <div class="formErr" id="genderMess"></div>
+        <input type="number" min="0" max="1000000000000000"  id="walletAmountInput" name="walletAmount" placeholder="Wallet Amount" required>
+        <div class="formErr" id="walletAmountMess"></div>
         <button>Submit</button>
     </form>
   </div>
 
   <%- include("./partials/footer.ejs") %>
+
+  <script>
+    function validate()
+    {
+      let patientIdInput = document.getElementById("patientIdInput").value;
+      let nameInput = document.getElementById("nameInput").value;
+      let ageInput = document.getElementById("ageInput").value;
+      let genderInput = document.getElementById("genderInput").value;
+      let walletAmountInput = document.getElementById("walletAmountInput").value;
+
+      let isValid = true;
+
+      if(!patientIdInput)
+      {
+        document.getElementById("patientIdMess").innerHTML = "Patient ID must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(isNaN(Number(patientIdInput)))
+        {
+          document.getElementById("patientIdMess").innerHTML = "Enter numeric value only";
+          isValid = false;
+        }
+        else
+        {
+          if(Number(patientIdInput) < 1 || Number(patientIdInput) > 1000000000000)
+          {
+            document.getElementById("patientIdMess").innerHTML = "ID should be a number between 1 and 1000000000000";
+            isValid = false;
+          }
+        }
+      }
+      
+      if(!nameInput)
+      {
+        document.getElementById("nameMess").innerHTML = "Name must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(String(nameInput).length > 30)
+        {
+          document.getElementById("nameMess").innerHTML = "Name should be 30 characters at most";
+          isValid = false;
+        }
+      }
+
+      if(!genderInput)
+      {
+        document.getElementById("genderMess").innerHTML = "Gender must be given";
+        isValid = false;
+      }
+      else
+      {
+        const validGender = ['Male', 'Female', 'Prefer not to say'];
+        if(!validGender.includes(genderInput))
+        {
+          document.getElementById("genderMess").innerHTML = "Invalid gender input";
+          isValid = false;
+        }
+      }
+
+      if(!ageInput)
+      {
+        document.getElementById("ageMess").innerHTML = "Age must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(isNaN(Number(ageInput)))
+        {
+          document.getElementById("ageMess").innerHTML = "Age should be given a number";
+          isValid = false;
+        }
+        else
+        {
+          if(Number(ageInput) < 1 || Number(ageInput) > 500)
+          {
+            document.getElementById("ageMess").innerHTML = "age must be a number between 1 to 500";
+            isValid = false;
+          }
+        }
+      }
+        
+      if(!walletAmountInput)
+      {
+        document.getElementById("walletAmountMess").innerHTML = "Wallet amount must be given";
+        isValid = false;
+      }
+      else
+      {
+        if(isNaN(Number(walletAmountInput)))
+        {
+          document.getElementById("walletAmountMess").innerHTML = "Wallet amount should be given a number";
+          isValid = false;
+        }
+        else
+        {
+          if(Number(walletAmountInput) < 0 || Number(walletAmountInput) > 1000000000000000) 
+          {
+            document.getElementById("walletAmountMess").innerHTML = "Wallet Amount must be a number between 0 to 1000000000000000";
+            isValid = false;
+          }
+        }
+      }
+  
+      if(isValid)return true;
+      else return false;
+    }
+  </script>
+
 </body>
 </html>

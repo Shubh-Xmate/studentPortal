@@ -1,4 +1,12 @@
-
+<% if (isValidUser) { %>
+    <form action="/logout", method="post" style="text-align: center; margin-top: 30px;">
+        <button style="color : red">logout</button>
+    </form>
+<%} else { %>
+    <form class="centerMe" action="/authenticate" method="POST">
+        <button style="margin-top : 30px;">Authenticate me</button>
+    </form>
+<% } %>
 
 <footer>
     Copyright &copy; Patient Details 2023

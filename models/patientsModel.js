@@ -46,4 +46,4 @@ const Patient = sequelize.define("patientDetails", {
 //      console.error('Unable to create table : ', error);
 //  });
 
-module.exports = Patient;
+module.exports = {Patient};

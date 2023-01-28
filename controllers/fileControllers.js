@@ -1,41 +1,74 @@
-exports.homeData = async (req, res, next) => {
-    res.render('home' ,{mainContent : "Choose what do you want to do from the navbar", mainTitle : "Home"});
+require('dotenv').config()
+const {sendResponse} = require("../Utils/sendData")
+const {loginSession, logoutSession, setValidate} = require("../Utils/sessionHandler")
+
+let resStatus = 200;
+let resRenderedPage = 'home';
+let returningData = {mainContent : "", mainTitle : "", isValidUser : false, data : null, error : null};
+
+function updateReturningData(req, err = null, currStatus = 200)
+{
+    returningData.mainContent = ""; 
+    returningData.mainTitle = "Home"; 
+    returningData.error = err;
+    setValidate(returningData, req);
+    resRenderedPage = 'home';
+    resStatus = currStatus;
 }
 
-exports.getDataByPatientId = async(req, res, next)=>{
+exports.homeData = async (req, res) => 
+{
+    updateReturningData(req);
+    sendResponse(res, data = returningData, rendered_page = resRenderedPage);
+}
+
+exports.getDataByPatientId = async(req, res)=>{
     try
     {
-        const returningData = {mainContent : "Please enter the patient's id", mainTitle : "Give id find detail"};
-        res.render('findByUserId', returningData);
+        returningData.mainContent = "Please enter the patient's id"; 
+        returningData.mainTitle = "Give id find detail"; 
+        setValidate(returningData, req);
+        resRenderedPage = 'findByUserId';
+
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage);
     }
     catch(err)
     {
-        console.log(err);
-        res.send("fetchingPatientsIdUI : internal error");
+        updateReturningData(req, err, currStatus = 500);
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
 };
 
-exports.updateDataByPatientID = async (req, res, next) => {
+exports.updateDataByPatientID = async (req, res) => {
     try
     {
-        const returningData = {mainContent : "Please fill the form for updation", mainTitle : "Updation form"};
-        res.render('updationForm', returningData)
+        returningData.mainContent = "Please fill the form for updation"; 
+        returningData.mainTitle = "Updation form"; 
+        setValidate(returningData, req);
+        resRenderedPage = 'updationForm';
+
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage)
     }
     catch(err)
     {
-        console.log(err);
-        res.send("getUpdateForm : internal error");
+        updateReturningData(req, err, currStatus = 500);
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
 }
 
-exports.insertData = async (req, res, next)=>{
+exports.insertData = async (req, res)=>{
     try
     {
-        const returningData = {mainTitle : "Insertion form", mainContent : "Please fill your details"};
-        res.render('insertionForm', returningData)
+        returningData.mainTitle = "Insertion form";
+        returningData.mainContent = "Please fill your details";
+        setValidate(returningData, req);
+        resRenderedPage = 'insertionForm';
+
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
     catch(err)
     {
-        res.send(err);
+        updateReturningData(req, err, currStatus = 500);
+        sendResponse(res, data = returningData, rendered_page = resRenderedPage, rStatus = resStatus);
     }
 }

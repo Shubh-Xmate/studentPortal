@@ -39,6 +39,6 @@ This is a basic student portal where authorized users can view student data, upd
 ## Contributors
 
 Thanks to the following contributors for their valuable contributions to this project:
-- [@PC-11-00](https://github.com/PC-11-00)
-- [@username2](https://github.com/Shubh-Xmate)
-Feel free to contribute by submitting pull requests or reporting issues!
+[![GitHub contributors](https://img.shields.io/github/contributors/username/repo-name.svg)](https://github.com/username/repo-name/graphs/contributors)
+
+- Feel free to contribute by submitting pull requests or reporting issues!

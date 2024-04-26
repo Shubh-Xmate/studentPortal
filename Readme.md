@@ -31,7 +31,7 @@ This is a basic student portal where authorized users can view student data, upd
 4. Run `npm start`.
 5. The application will run on port 3000.
 
-<img src="./public/images/MySQL.png" width="200">
-<img src="./public/images/Redis.png" width="200">
+<img src="./public/images/MySQL.png" style="display: inline; width: 200px; height: auto; border: 1px solid black;">
+<img src="./public/images/Redis.png" style="display: inline; width: 200px; height: auto; border: 1px solid black;">
 
 Feel free to contribute by submitting pull requests or reporting issues!
